@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Face2 — Anonymize & Beautify Clinical Before/After Photos</title>
+  <meta name="description" content="Face2 helps MedSpas and clinics publish authentic before/after photos — anonymized for privacy or beautified with consent — while preserving real results." />
+  <style>
+    :root{
+      --bg:#0f172a;         /* dark slate */
+      --card:#0b1226;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --brand:#3AAFA9;      /* teal */
+      --brand-600:#2b7a78;
+      --ring:#1f2937;
+      --border:#1e293b;
+      --ok:#16a34a;
+      --warn:#eab308;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1140px;margin:0 auto;padding:0 18px}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--brand);color:#062a28;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;transition:.2s}
+    .btn:hover{background:var(--brand-600);transform:translateY(-1px)}
+    .btn.ghost{background:transparent;border:1px solid var(--brand);color:var(--text)}
+    .pill{display:inline-flex;gap:.5rem;align-items:center;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:.8rem;color:var(--muted);background:#0b1020}
+    .brand{display:flex;align-items:center;gap:.6rem;font-weight:800}
+    .brand img{width:28px;height:28px}
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.7));backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .mobile-nav{display:none}
+    /* HERO */
+    .hero{padding:56px 0 24px}
+    .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:center}
+    h1{font-size:clamp(28px,5vw,48px);line-height:1.1;margin:10px 0}
+    p.lead{color:var(--muted);font-size:clamp(16px,2.6vw,19px);margin:0 0 18px}
+    .hero-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+    .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .panel{background:#0c162f;border:1px solid var(--ring);border-radius:14px;padding:10px;text-align:center}
+    .panel h5{margin:0 0 8px;font-size:.9rem;color:var(--muted)}
+    .panel .ph{width:100%;aspect-ratio:3/4;border-radius:10px;background:linear-gradient(135deg,#101a38,#0a132b);display:flex;align-items:center;justify-content:center;color:#6b7280;border:1px dashed #1f2a44}
+    /* TRUST */
+    .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0}
+    .trust .item{border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;color:var(--muted);background:#0b1020}
+    /* SECTIONS */
+    section{padding:42px 0;border-top:1px solid var(--border)}
+    h2{font-size:clamp(22px,4vw,32px);margin:0 0 14px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .card h3{margin:0 0 8px;font-size:1.05rem}
+    .flag{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    /* HOW */
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .step{border:1px dashed var(--ring);border-radius:12px;padding:14px;background:#0b1020}
+    .step .num{width:28px;height:28px;border-radius:999px;background:var(--brand);color:#062a28;display:inline-flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:6px}
+    /* PRICING */
+    .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .price{border:1px solid var(--border);border-radius:16px;background:var(--card);padding:18px;position:relative}
+    .price.popular{outline:2px solid var(--brand)}
+    .price h3{margin:0}
+    .price .big{font-weight:900;font-size:32px;margin:6px 0}
+    .toggle{display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:14px}
+    .toggle button{border:1px solid var(--border);background:#0b1020;color:var(--text);padding:6px 10px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:var(--brand);color:#062a28;border-color:var(--brand)}
+    ul{padding-left:18px;margin:10px 0;color:var(--muted)}
+    /* FAQ */
+    details{background:#0b1020;border:1px solid var(--border);border-radius:10px;padding:10px}
+    details+details{margin-top:8px}
+    details summary{cursor:pointer;font-weight:700}
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:24px 0;color:var(--muted)}
+    /* MOBILE */
+    @media (max-width: 980px){
+      .hero-grid{grid-template-columns:1fr}
+      .trust{grid-template-columns:repeat(2,1fr)}
+      .grid-3,.steps,.pricing{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .mobile-nav{display:block}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="#top">
+          <!-- Replace src with your icon asset -->
+          <img src="/assets/face2-icon.png" alt="Face2 icon" />
+          <span>Face2</span>
+        </a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="/consent.html" class="pill">Consent & Policy</a>
+          <a href="/app" class="btn">Open App</a>
+        </div>
+        <div class="mobile-nav">
+          <a class="btn ghost" href="/app">Open App</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="container">
+    <section class="hero">
+      <span class="pill">HIPAA-minded | Consent-aware | Results-true</span>
+      <div class="hero-grid">
+        <div>
+          <h1>Publish before/after photos without privacy risk — or polish consented photos for clarity.</h1>
+          <p class="lead">Face2 anonymizes identity while **preserving real treatment results**, or beautifies consented photos without changing anatomy. One tool. Two modes. Stateless by design.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <a href="/app?mode=anonymize" class="btn">Try Anonymize</a>
+            <a href="/app?mode=beautify" class="btn ghost">Try Beautify</a>
+          </div>
+          <div style="margin-top:14px;color:var(--muted);font-size:.9rem">No JSON in UI • Originals only • Server stores audit logs</div>
+        </div>
+        <div class="hero-card">
+          <div class="pair">
+            <div class="panel">
+              <h5>Before (Anonymized)</h5>
+              <img src="/assets/before-anonymized.jpg" alt="Before treatment (anonymized)" style="width:100%;aspect-ratio:3/4;border-radius:10px;object-fit:cover;">
+            </div>
+            <div class="panel">
+              <h5>After (Anonymized)</h5>
+              <img src="/assets/after-anonymized.jpg" alt="After treatment (anonymized)" style="width:100%;aspect-ratio:3/4;border-radius:10px;object-fit:cover;">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <div class="pill">Identity Lock</div>
+            <div class="pill">Imperfection Lock</div>
+            <div class="pill">Alignment 5–20%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trust">
+        <div class="item">MedSpa-ready</div>
+        <div class="item">Stateless Engine</div>
+        <div class="item">Similarity Guard</div>
+        <div class="item">Consent Gate</div>
+      </div>
+    </section>
+
+    <section id="features">
+      <h2>Why clinics pick Face2</h2>
+      <div class="grid-3">
+        <div class="card">
+          <div class="flag">🔒 Privacy-first anonymization</div>
+          <h3>ONE identity across both panels</h3>
+          <p class="muted">Hair/eyes/brows/nose/jaw/skin shifted once then locked. BEFORE preserves imperfections. AFTER shows realistic improvement only.</p>
+        </div>
+        <div class="card">
+          <div class="flag">🧭 Consent-aware beautify</div>
+          <h3>Polish consented photos</h3>
+          <p class="muted">Fix lighting, framing, and clarity — without altering anatomy, results, or background. Grain re-add prevents plastic skin.</p>
+        </div>
+        <div class="card">
+          <div class="flag">🧪 Deterministic & stateless</div>
+          <h3>No drift, no memory</h3>
+          <p class="muted">Each job runs fresh from originals. No iteration on prior outputs. Server logs results for QA, feedback, and finetuning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <strong>Upload</strong>
+          <div class="muted">Provide before/after, or just one photo — or generate from notes.</div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <strong>Select mode</strong>
+          <div class="muted">Anonymize (no consent) or Beautify (consent required).</div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <strong>Tune</strong>
+          <div class="muted">Variation slider 15–100, alignment variance, clothing/hair micro-changes.</div>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <strong>Publish</strong>
+          <div class="muted">Get a labeled composite ready for web, with audit log stored server-side.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="toggle">
+        <button id="mBtn" class="active">Monthly</button>
+        <button id="yBtn">Annual <span style="color:var(--ok);font-weight:800;margin-left:6px">Save 20%</span></button>
+      </div>
+      <div class="pricing">
+        <div class="price">
+          <h3>Starter</h3>
+          <div class="big" id="p1">$97<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+          <ul>
+            <li>100 jobs / month</li>
+            <li>Anonymize or Beautify</li>
+            <li>Square composites</li>
+            <li>Email support</li>
+          </ul>
+          <a href="/app?plan=starter" class="btn" style="width:100%;justify-content:center">Start</a>
+        </div>
+        <div class="price popular">
+          <div class="pill" style="position:absolute;right:12px;top:12px">Most Popular</div>
+          <h3>Growth</h3>
+          <div class="big" id="p2">$197<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+          <ul>
+            <li>400 jobs / month</li>
+            <li>Priority processing</li>
+            <li>Similarity guard tuning</li>
+            <li>Basic finetuning from feedback</li>
+          </ul>
+          <a href="/app?plan=growth" class="btn" style="width:100%;justify-content:center">Choose Growth</a>
+        </div>
+        <div class="price">
+          <h3>Clinic+</h3>
+          <div class="big" id="p3">$497<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+          <ul>
+            <li>2,000 jobs / month</li>
+            <li>API access & SSO</li>
+            <li>Custom consent copy</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="/contact" class="btn" style="width:100%;justify-content:center">Talk to Sales</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Built for compliance & authenticity</h2>
+      <div class="grid-3">
+        <div class="card"><strong>Consent Gate</strong><p class="muted">Beautify runs only with consent on file. Anonymize replaces identity to avoid re-identification risk.</p></div>
+        <div class="card"><strong>Similarity Guard</strong><p class="muted">Target cosine thresholds by variation; auto re-run if too similar.</p></div>
+        <div class="card"><strong>No JSON in UI</strong><p class="muted">The app returns images only. Logs are stored server-side with thumbs-up/down feedback.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>FAQ</h2>
+      <details><summary>How does anonymization preserve results?</summary><div class="muted">Identity edits are applied once and locked across both panels. Treatment effects (from notes or defaults) are preserved without exaggeration.</div></details>
+      <details><summary>Do you store my originals?</summary><div class="muted">Originals are processed for the current job. Your account can choose whether to retain or purge originals after processing.</div></details>
+      <details><summary>What about HIPAA?</summary><div class="muted">Face2 is HIPAA-minded. Beautify requires consent on file; Anonymize replaces identity and avoids PHI exposure in outputs.</div></details>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+      <div>© <span id="yr"></span> Face2. All rights reserved.</div>
+      <div style="display:flex;gap:14px">
+        <a href="/consent.html">Consent & Policy</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/tos">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // simple pricing toggle
+    const mBtn = document.getElementById('mBtn');
+    const yBtn = document.getElementById('yBtn');
+    const p1 = document.getElementById('p1');
+    const p2 = document.getElementById('p2');
+    const p3 = document.getElementById('p3');
+    let annual = false;
+
+    function setPricing(a){
+      annual = a;
+      mBtn.classList.toggle('active', !a);
+      yBtn.classList.toggle('active', a);
+      if(a){
+        p1.innerHTML = '$930<span style="font-size:14px;color:var(--muted)">/yr</span>';   // 97 * 12 * .8
+        p2.innerHTML = '$1,892<span style="font-size:14px;color:var(--muted)">/yr</span>'; // 197 * 12 * .8
+        p3.innerHTML = '$4,771<span style="font-size:14px;color:var(--muted)">/yr</span>'; // 497 * 12 * .8
+      }else{
+        p1.innerHTML = '$97<span style="font-size:14px;color:var(--muted)">/mo</span>';
+        p2.innerHTML = '$197<span style="font-size:14px;color:var(--muted)">/mo</span>';
+        p3.innerHTML = '$497<span style="font-size:14px;color:var(--muted)">/mo</span>';
+      }
+    }
+    mBtn.addEventListener('click', ()=>setPricing(false));
+    yBtn.addEventListener('click', ()=>setPricing(true));
+    setPricing(false);
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
