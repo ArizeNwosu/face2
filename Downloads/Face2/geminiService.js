@@ -151,8 +151,8 @@ INPUTS (from backend)
 - images: may include 0/1/2 of {before, after}
 - notes: free text describing treatment(s) and desired AFTER appearance
 - variation: 15–100 (Anonymize strength; scales identity edits)
-- alignment_variance: optional override 5–20%
-- beautify_intensity: 1–10 (polish strength)
+- alignment_variance: optional override 5–30%
+- beautify_intensity: 1–20 (polish strength)
 - advanced: hair micro-variation, clothing type lock, clothing variation (≤15%), optional eye color
 
 IF NOTES ARE MISSING
@@ -177,22 +177,22 @@ Notes-based preservation:
 - If notes exist: BEFORE shows baseline imperfections described; AFTER shows only the improvements described (no exaggeration).
 - If no notes: BEFORE preserves imperfections; AFTER applies generic realistic improvements (reduced lines/folds, reduced under-eye shadows, slightly more even tone).
 Identity Randomization (scaled by variation 15→100; apply once then lock across panels):
-- Hair: natural shade {auburn, brunette, chestnut, dark blonde, black}; style {straight|loose wave}; part {middle|side}; length {collarbone–shoulder}. Keep consistent; allow ≤10% micro-variation (slight part shift, loose strands, minor volume change).
+- Hair: natural shade {auburn, brunette, chestnut, dark blonde, black}; style {straight|loose wave}; part {middle|side}; length {collarbone–shoulder}. Keep consistent; allow ≤50% variation (part shift, loose strands, volume change, color change).
 - Brows: reshape (fuller/arched | straight/full); magnitude scales with variation.
 - Eyes: iris {hazel|green|gray|brown}, identical across panels; lid/crease geometry scales with variation.
 - Nose: one morph (narrower bridge | softer tip | slightly wider base); magnitude scales with variation.
-- Jaw/Cheeks: contour tweak (softer | narrower); magnitude scales with variation.
-- Skin tone: uniform shift up to ±15% max.
+- Jaw/Cheeks: contour tweak (softer | narrower | broader); magnitude scales with variation.
+- Skin tone: uniform shift up to ±50% max.
 - Marks: remove/relocate identifiable moles/scars/tattoos consistently.
 Clothing (same type; realistic variation):
 - Keep clothing type identical across panels (scrub→scrub, tee→tee).
-- Introduce ≤10–15% variation: wrinkles/folds, neckline angle, sleeve/collar position; neutral shade shift (charcoal↔slate); subtle texture change (matte knit vs scrub weave).
+- Introduce ≤10–30% variation: wrinkles/folds, neckline angle, sleeve/collar position; neutral shade shift (charcoal↔slate); subtle texture change (matte knit vs scrub weave).
 - No logos, no graphics.
 Alignment & Framing:
 - Align AFTER to BEFORE via similarity transform.
 - Add natural misalignment 5–20% (random unless override is provided). Do not perfectly align.
 Imperfection Lock (delineation):
-- BEFORE must visibly preserve: pores, fine lines, nasolabial folds, under-eye shadows, uneven tone, redness, acne/texture.
+- BEFORE must visibly preserve: pores, fine lines, wrinkles, bruises, scars, nasolabial folds, under-eye shadows, uneven tone, redness, acne/texture.
 - AFTER shows only improvements (notes-based or default). Keep skin textured and human (no plastic).
 Realism:
 - Maintain pores, micro-shadows, natural asymmetries, stray hairs; add subtle grain if too clean; clinical lighting (no cinematic glow).
@@ -200,7 +200,7 @@ Similarity Guard:
 - Non-matching identity required. Internal face-embedding cosine thresholds by variation:
   - 15% → ≤ 0.40
   - 50% → ≤ 0.32
-  - 100% → ≤ 0.25
+  - 100% → ≤ 0.15
 - If above threshold, re-run with stronger identity edits (treatment unchanged), up to 3 attempts.
 
 CASES
@@ -210,12 +210,12 @@ CASES
 
 VARIATION & INTENSITY
 Anonymize variation (15–100):
-- Alignment variance: 5% → 20%
-- Nose/Jaw/Eyelid morph caps: 5% → 20%
+- Alignment variance: 5% → 30%
+- Nose/Jaw/Eyelid morph caps: 5% → 40%
 - Brow reshape: ±5% → ±40%
-- Hair hue/lightness: ±5% → ±15%
-- Clothing variation: 5% → 15%
-- Skin-tone shift: ≤ ±15%
+- Hair hue/lightness: ±5% → ±65%
+- Clothing variation: 5% → 25%
+- Skin-tone shift: ≤ ±40%
 Beautify intensity (1–10):
 - WB ±300K→±1500K; Exposure ±0.15→±0.6 EV; Contrast low→med-high; Perspective ≤2°→≤5°. Always preserve identity, treatment, background.
 
@@ -226,6 +226,7 @@ HARD CONSTRAINTS
 - Never change clothing type across panels.
 - Never drift identity traits within a job.
 - Never reuse cached outputs or iterate from prior results.
+- Never add any text overlay to the output 
 
 FEEDBACK
 UI may collect thumbs 👍/👎 and comments. You do not render feedback controls.

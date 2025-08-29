@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service - Face2</title>
+  <style>
+    :root{
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --card:#0f172a;
+      --border:#334155;
+      --brand:#3AAFA9;
+      --brand-600:#2d8a82;
+      --ring:#475569;
+      --ok:#22c55e;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;background:linear-gradient(135deg, #3AAFA9 0%, #e0f2fe 25%, #f0fdfa 50%, #3AAFA9 100%);color:var(--text);min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:100%;width:100%;margin:0;padding:0 20px}@media(min-width:640px){.container{padding:0 32px}}@media(min-width:1024px){.container{padding:0 48px}}@media(min-width:1280px){.container{padding:0 64px}}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--brand);color:#062a28;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;transition:.2s;text-decoration:none}
+    .btn:hover{background:var(--brand-600);transform:translateY(-1px)}
+    .btn.ghost{background:transparent;border:1px solid var(--brand);color:#000000}
+    .pill{display:inline-flex;gap:.5rem;align-items:center;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:.8rem;color:var(--muted);background:#0b1020}
+    .brand{display:flex;align-items:center;gap:.6rem;font-weight:800}
+    .brand img{width:auto;height:60px}
+    
+    /* HEADER */
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.7));backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .mobile-nav{display:none}
+    
+    /* CONTENT */
+    .content{background:var(--card);border:1px solid var(--border);border-radius:16px;margin:40px 0;padding:40px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+    h1{font-size:clamp(28px,5vw,42px);line-height:1.2;margin:0 0 24px;color:var(--text);text-align:center}
+    h2{font-size:clamp(20px,4vw,28px);margin:32px 0 16px;color:var(--text);border-bottom:2px solid var(--brand);padding-bottom:8px}
+    h3{font-size:1.2rem;margin:24px 0 12px;color:var(--text)}
+    p, li{margin:12px 0;line-height:1.6}
+    ul{padding-left:20px}
+    .company-info{background:#0b1020;border:1px solid var(--ring);border-radius:12px;padding:20px;margin:24px 0}
+    .divider{border:none;height:2px;background:var(--border);margin:32px 0;border-radius:1px}
+    
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:24px 0;color:#000000;margin-top:40px}
+    
+    /* MOBILE */
+    @media (max-width: 768px){
+      .nav-links{display:none}
+      .mobile-nav{display:block}
+      .content{padding:24px;margin:20px 0}
+      h1{font-size:24px}
+      h2{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/index.html" class="brand">
+          <img src="assets/face2-icon.png" alt="Face2 icon" />
+        </a>
+        <div class="nav-links">
+          <a href="/index.html#features">Features</a>
+          <a href="/index.html#how">How it works</a>
+          <a href="/index.html#pricing">Pricing</a>
+          <a href="/consent.html" class="pill">Consent & Policy</a>
+          <a href="/app.html" class="btn">Open App</a>
+        </div>
+        <div class="mobile-nav">
+          <a class="btn ghost" href="/app.html">Open App</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="content">
+      <h1>Terms of Service</h1>
+      
+      <div class="company-info">
+        <strong>Effective Date:</strong> August 28, 2025<br>
+        <strong>Company:</strong> Social Gear Media<br>
+        <strong>Address:</strong> 741 Lakefield Road, Suite G, Westlake Village, CA 91361<br>
+        <strong>Contact Email:</strong> <a href="mailto:support@face2.app" style="color:var(--brand)">support@face2.app</a>
+      </div>
+
+      <hr class="divider">
+
+      <h2>1. Acceptance of Terms</h2>
+      <p>By accessing or using Face2 (the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service. These Terms apply to all users, including med spa owners, staff, contractors, and affiliates.</p>
+
+      <hr class="divider">
+
+      <h2>2. Description of Service</h2>
+      <p>Face2 is a web-based image processing platform that allows users to generate clinical before-and-after photo composites in two modes:</p>
+      <ul>
+        <li><strong>Beautify Mode</strong> – Enhances original photos while maintaining identity and treatment results. Requires documented patient consent.</li>
+        <li><strong>Anonymize Mode</strong> – Generates de-identified images by altering identity features while preserving treatment results. Does not require patient consent, as outputs are non-identifiable.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>3. User Responsibilities</h2>
+      <p>By using the Service, you agree:</p>
+      <ul>
+        <li>To only upload patient photos to Beautify Mode if you have obtained valid, written authorization from the patient.</li>
+        <li>To comply with all applicable privacy, health, and advertising laws in your jurisdiction.</li>
+        <li>To not misuse the Service for fraudulent, illegal, or misleading purposes.</li>
+        <li>To be solely responsible for the images you upload, including ensuring you have the right to process them.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>4. Data Handling & Privacy</h2>
+      <ul>
+        <li>Images are processed statelessly: only the originals you upload are used for each job.</li>
+        <li>Working data is purged after processing.</li>
+        <li>Outputs and logs are stored securely in your account until you delete them.</li>
+        <li>Please review our <a href="/privacy.html" style="color:var(--brand)">Privacy Policy</a> for full details.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>5. Consent Requirements</h2>
+      <ul>
+        <li><strong>Beautify Mode:</strong> You must obtain and maintain patient consent before use.</li>
+        <li><strong>Anonymize Mode:</strong> Consent is not required, as outputs cannot reasonably be linked back to the original subject.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>6. Intellectual Property</h2>
+      <ul>
+        <li>All rights, title, and interest in the Service (software, UI, branding, and logos) are owned by Social Gear Media.</li>
+        <li>You retain ownership of original photos you upload.</li>
+        <li>Outputs generated by the Service are licensed to you for commercial use in marketing and advertising, provided you comply with these Terms.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>7. Prohibited Uses</h2>
+      <p>You may not:</p>
+      <ul>
+        <li>Attempt to re-identify anonymized outputs.</li>
+        <li>Upload obscene, defamatory, or unlawful content.</li>
+        <li>Reverse engineer, copy, or resell the Service.</li>
+        <li>Use outputs in a way that misrepresents treatment results.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>8. Payment & Subscriptions</h2>
+      <ul>
+        <li>The Service may be offered on a subscription basis. Prices and billing terms will be disclosed at the time of purchase.</li>
+        <li>All payments are non-refundable unless otherwise required by law.</li>
+        <li>Failure to pay may result in suspension or termination of your account.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>9. Disclaimers</h2>
+      <ul>
+        <li>The Service is provided "as is" and "as available" without warranties of any kind.</li>
+        <li>Social Gear Media does not guarantee that anonymized images meet legal definitions of de-identification in all jurisdictions.</li>
+        <li>We are not responsible for misuse of outputs, failure to obtain consent (when required), or non-compliant advertising practices.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>10. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by law:</p>
+      <ul>
+        <li>Social Gear Media shall not be liable for indirect, incidental, or consequential damages.</li>
+        <li>Our total liability for any claim related to the Service shall not exceed the amount you paid us in the 12 months preceding the claim.</li>
+      </ul>
+
+      <hr class="divider">
+
+      <h2>11. Termination</h2>
+      <p>We may suspend or terminate your account if you violate these Terms, misuse the Service, or fail to make required payments. Upon termination, you lose access to stored outputs and logs.</p>
+
+      <hr class="divider">
+
+      <h2>12. Governing Law</h2>
+      <p>These Terms are governed by the laws of the State of California, without regard to conflict of law principles. Any disputes shall be resolved in courts located in Los Angeles County, California.</p>
+
+      <hr class="divider">
+
+      <h2>13. Changes to Terms</h2>
+      <p>We may update these Terms from time to time. Updates will be posted on this page with a new effective date. Your continued use of the Service after updates means you accept the new Terms.</p>
+
+      <hr class="divider">
+
+      <h2>14. Contact</h2>
+      <p>If you have questions about these Terms, please contact us at:</p>
+      <div class="company-info">
+        <strong>Social Gear Media</strong><br>
+        741 Lakefield Road, Suite G<br>
+        Westlake Village, CA 91361<br>
+        Email: <a href="mailto:support@face2.app" style="color:var(--brand)">support@face2.app</a>
+      </div>
+      
+      <div style="text-align:center;margin-top:40px">
+        <a href="/app.html" class="btn" style="font-size:18px;padding:16px 32px">Start Using Face2</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+      <div>© <span id="yr"></span> Face2. All rights reserved.</div>
+      <div style="display:flex;gap:14px">
+        <a href="/consent.html">Consent & Policy</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/tos.html">Terms</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/help.html">Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
