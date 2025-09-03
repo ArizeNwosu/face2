@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateClinicalVideo } from './gemini.service.ts';
+import { videoService } from '../../services/videoService';
+import { useAuthStore } from '../../store/authStore';
 
 // Helper function to convert image to 16:9 aspect ratio with letterboxing/pillarboxing
 const convertTo16x9 = (dataUrl: string): Promise<string> => {
@@ -55,6 +57,7 @@ const convertTo16x9 = (dataUrl: string): Promise<string> => {
 
 
 const NewGenerate = () => {
+    const { user } = useAuthStore();
     const [compositeImage, setCompositeImage] = useState<string | null>(null);
     const [playableVideoUrl, setPlayableVideoUrl] = useState<string | null>(null);
     const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
@@ -119,17 +122,35 @@ const NewGenerate = () => {
             return;
         }
 
+        if (!user) {
+            setError("Please login to generate videos.");
+            return;
+        }
+
         setIsLoading(true);
         setLoadingStage(0);
         setError(null);
         setPlayableVideoUrl(null);
         setVideoBlob(null);
 
+        let videoRecordId: string | null = null;
+
         try {
+            // Create video record in Firestore
+            const videoTitle = `Clinical Video - ${new Date().toLocaleDateString()}`;
+            const videoPrompt = `Animation: ${primaryAnimation}, Effect: ${emphasisEffect}, Speed: ${motionSpeed}`;
+            
+            videoRecordId = await videoService.createVideo({
+                userId: user.uid,
+                title: videoTitle,
+                prompt: videoPrompt,
+            });
+
             setLoadingStage(1); // Preparing Image
             const imageBase64 = compositeImage.split(',')[1];
             
             const videoOptions = { primaryAnimation, emphasisEffect, motionSpeed };
+            const startTime = Date.now();
             const videoApiUrl = await generateClinicalVideo(imageBase64, videoOptions, setLoadingStage);
 
             // Fetch the video data to create a playable blob URL
@@ -144,6 +165,16 @@ const NewGenerate = () => {
             const localUrl = window.URL.createObjectURL(blob);
             setPlayableVideoUrl(localUrl);
 
+            // Update video record as completed
+            const processingTime = Date.now() - startTime;
+            await videoService.markVideoAsCompleted(
+                videoRecordId,
+                videoApiUrl, // Store the original API URL
+                undefined, // No thumbnail for now
+                processingTime,
+                blob.size
+            );
+
         } catch (err: any) {
             console.error(err);
             let errorMessage = `An error occurred: ${err.message || 'Please try again.'}`;
@@ -151,6 +182,15 @@ const NewGenerate = () => {
                 errorMessage = "You've exceeded the current API usage quota. Please check your plan and billing details with Google AI Studio and try again later.";
             }
             setError(errorMessage);
+
+            // Mark video as failed if we created a record
+            if (videoRecordId) {
+                try {
+                    await videoService.markVideoAsFailed(videoRecordId, errorMessage);
+                } catch (updateError) {
+                    console.error('Error updating video record as failed:', updateError);
+                }
+            }
         } finally {
             setIsLoading(false);
             setLoadingStage(0);

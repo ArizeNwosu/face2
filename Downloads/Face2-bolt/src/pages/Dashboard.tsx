@@ -4,6 +4,7 @@ import { Video, Check, Crown, Zap, Users, LogOut, Clock, Download, Eye, Calendar
 import { useAuthStore } from '../store/authStore';
 import { logout, updateUserSubscription } from '../services/authService';
 import { createCheckoutSession, createCustomerPortalSession } from '../services/stripeService';
+import { videoService } from '../services/videoService';
 
 interface VideoHistory {
   id: string;
@@ -74,39 +75,40 @@ const Dashboard = () => {
                                 userProfile?.subscription.plan !== 'free' &&
                                 userProfile?.subscription.stripeCustomerId;
 
-  // Mock data for video history - in production this would come from Firestore
+  // Fetch real video history from Firestore
   useEffect(() => {
-    if (user && hasActiveSubscription) {
-      // Mock video history data
-      const mockHistory: VideoHistory[] = [
-        {
-          id: '1',
-          title: 'Facial Treatment - Before & After',
-          createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-          status: 'completed',
-          downloadUrl: '#',
-          thumbnailUrl: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&h=200&fit=crop'
-        },
-        {
-          id: '2',
-          title: 'Body Contouring Results',
-          createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-          status: 'completed',
-          downloadUrl: '#',
-          thumbnailUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=300&h=200&fit=crop'
-        },
-        {
-          id: '3',
-          title: 'Skin Rejuvenation Video',
-          createdAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-          status: 'processing',
+    const fetchVideoHistory = async () => {
+      if (user) {
+        try {
+          const videos = await videoService.getUserVideos(user.uid);
+          const formattedVideos = videos.map(video => videoService.formatVideoForDisplay(video));
+          setVideoHistory(formattedVideos);
+        } catch (error) {
+          console.error('Error fetching video history:', error);
+          // Fall back to empty array on error
+          setVideoHistory([]);
         }
-      ];
-      setVideoHistory(mockHistory);
+      }
+    };
+
+    fetchVideoHistory();
+  }, [user]);
+
+  const refreshVideoHistory = async () => {
+    if (user) {
+      try {
+        const videos = await videoService.getUserVideos(user.uid);
+        const formattedVideos = videos.map(video => videoService.formatVideoForDisplay(video));
+        setVideoHistory(formattedVideos);
+      } catch (error) {
+        console.error('Error refreshing video history:', error);
+      }
     }
-  }, [user, hasActiveSubscription]);
+  };
 
   const handleViewHistory = () => {
+    // Refresh history when opening modal
+    refreshVideoHistory();
     setShowHistory(true);
   };
 
@@ -121,50 +123,12 @@ const Dashboard = () => {
       console.log('User ID:', user.uid);
       console.log('User email:', user.email);
       
-      // Check if we're in development mode and using live keys (bypass Stripe)
-      const isDevModeWithLiveKeys = import.meta.env.DEV && 
-        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_live_');
-      
-      if (isDevModeWithLiveKeys) {
-        // Simulate payment flow for development
-        console.log('🧪 Development mode detected with live keys - simulating payment...');
-        const confirmed = confirm(`🧪 DEV MODE: Simulate successful payment for ${planId} plan?`);
-        
-        if (confirmed) {
-          // Simulate payment processing
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          // Simulate successful subscription creation
-          const mockSubscription = {
-            plan: planId,
-            status: 'active' as const,
-            videosRemaining: planId === 'starter' ? 5 : planId === 'pro' ? 20 : 50,
-            videosTotal: planId === 'starter' ? 5 : planId === 'pro' ? 20 : 50,
-            stripeCustomerId: `dev_cus_${Date.now()}`,
-            stripeSubscriptionId: `dev_sub_${Date.now()}`,
-            renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-          };
-          
-          // Update user subscription in Firebase
-          await updateUserSubscription(user.uid, mockSubscription);
-          console.log('🎉 Simulated successful payment:', mockSubscription);
-          alert(`🎉 Development payment simulation successful! Plan: ${planId}`);
-          
-          // Refresh the page to show updated subscription
-          window.location.reload();
-        } else {
-          setLoading(false);
-          setSelectedPlan(null);
-        }
-      } else {
-        // Use real Stripe flow
-        await createCheckoutSession(
-          planId as 'starter' | 'pro' | 'enterprise',
-          user.uid,
-          user.email || ''
-        );
-        // User will be redirected to Stripe Checkout
-      }
+      await createCheckoutSession(
+        planId as 'starter' | 'pro' | 'enterprise',
+        user.uid,
+        user.email || ''
+      );
+      // The createCheckoutSession function handles the redirect internally
     } catch (error) {
       console.error('Error processing payment:', error);
       console.error('Error details:', error.message);
