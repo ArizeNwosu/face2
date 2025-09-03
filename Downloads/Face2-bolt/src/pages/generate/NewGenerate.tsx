@@ -63,6 +63,20 @@ const NewGenerate = () => {
     const [loadingStage, setLoadingStage] = useState(0);
     const [error, setError] = useState<string | null>(null);
     
+    // Feedback state
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [feedbackGiven, setFeedbackGiven] = useState(false);
+    const [feedbackRating, setFeedbackRating] = useState<'good' | 'bad' | null>(null);
+    const [showDetailedFeedback, setShowDetailedFeedback] = useState(false);
+    const [feedbackCategory, setFeedbackCategory] = useState<string>('');
+    const [feedbackText, setFeedbackText] = useState('');
+    const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+    
+    // Video customization state
+    const [primaryAnimation, setPrimaryAnimation] = useState('animate_before_head_turn');
+    const [emphasisEffect, setEmphasisEffect] = useState('none');
+    const [motionSpeed, setMotionSpeed] = useState('normal');
+    
     const toolSectionRef = useRef<HTMLDivElement>(null);
     const loadingStages = ['Preparing Image', 'Sending to AI', 'Generating Video', 'Finalizing Result'];
 
@@ -115,7 +129,8 @@ const NewGenerate = () => {
             setLoadingStage(1); // Preparing Image
             const imageBase64 = compositeImage.split(',')[1];
             
-            const videoApiUrl = await generateClinicalVideo(imageBase64, setLoadingStage);
+            const videoOptions = { primaryAnimation, emphasisEffect, motionSpeed };
+            const videoApiUrl = await generateClinicalVideo(imageBase64, videoOptions, setLoadingStage);
 
             // Fetch the video data to create a playable blob URL
             setLoadingStage(4); // "Finalizing Result"
@@ -156,11 +171,73 @@ const NewGenerate = () => {
             a.click();
             window.URL.revokeObjectURL(url);
             a.remove();
+            
+            // Show feedback after successful download
+            setTimeout(() => {
+                if (!feedbackGiven) {
+                    setShowFeedback(true);
+                }
+            }, 1000);
         } catch (downloadError) {
             console.error('Download failed:', downloadError);
             setError('Failed to download the video. Please try again.');
         } finally {
             setIsDownloading(false);
+        }
+    };
+
+    // Feedback functions
+    const handleFeedbackRating = (rating: 'good' | 'bad') => {
+        setFeedbackRating(rating);
+        if (rating === 'bad') {
+            setShowDetailedFeedback(true);
+        } else {
+            // For good rating, submit immediately
+            submitFeedback(rating, '', '');
+        }
+    };
+
+    const handleDetailedFeedback = (category: string, text: string = '') => {
+        setFeedbackCategory(category);
+        submitFeedback('bad', category, text);
+    };
+
+    const submitFeedback = async (rating: 'good' | 'bad', category: string = '', text: string = '') => {
+        setIsSubmittingFeedback(true);
+        
+        try {
+            // Prepare feedback data
+            const feedbackData = {
+                rating,
+                category,
+                text,
+                videoUrl: playableVideoUrl,
+                compositeImageHash: compositeImage ? btoa(compositeImage.substring(0, 100)) : null,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                prompt: "Clinical demonstration video generation", // This would be the actual prompt used
+            };
+
+            console.log('📊 Feedback submitted:', feedbackData);
+            
+            // In production, you would send this to your backend:
+            // await fetch('/api/feedback', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(feedbackData)
+            // });
+
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            setFeedbackGiven(true);
+            setShowFeedback(false);
+            setShowDetailedFeedback(false);
+            
+        } catch (error) {
+            console.error('Failed to submit feedback:', error);
+        } finally {
+            setIsSubmittingFeedback(false);
         }
     };
     
@@ -219,14 +296,14 @@ const NewGenerate = () => {
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-14 sm:h-16">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                            </div>
+                        <a href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                            <img 
+                                src="/logo.svg" 
+                                alt="MedSpaGen Logo" 
+                                className="w-6 h-6 sm:w-8 sm:h-8"
+                            />
                             <span className="text-lg sm:text-xl font-bold text-gray-900">MedSpaGen</span>
-                        </div>
+                        </a>
                         <nav className="flex items-center">
                             <a href="/" className="text-sm sm:text-base text-gray-700 hover:text-blue-600 transition-colors">Back to Home</a>
                         </nav>
@@ -250,6 +327,99 @@ const NewGenerate = () => {
                             image={compositeImage} 
                             setImage={setCompositeImage} 
                         />
+                    </div>
+
+                    {/* Video Style Customization Section */}
+                    <div className="video-style-section mb-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 sm:p-8 border border-blue-100 shadow-sm">
+                        <div className="text-center mb-6 sm:mb-8">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl mb-4">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
+                                Customize Your Video Style
+                            </h3>
+                            <p className="text-gray-600 text-sm sm:text-base">
+                                Fine-tune the animation and emphasis to match your clinical presentation needs
+                            </p>
+                        </div>
+                        
+                        <div className="style-controls grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                            <div className="style-control group">
+                                <label htmlFor="primary-animation" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                    Primary Animation
+                                </label>
+                                <div className="relative">
+                                    <select 
+                                        id="primary-animation"
+                                        value={primaryAnimation}
+                                        onChange={(e) => setPrimaryAnimation(e.target.value)}
+                                        className="w-full appearance-none px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium text-gray-700 shadow-sm hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                                    >
+                                        <option value="animate_before_head_turn">Animate 'Before' (Head Turn)</option>
+                                        <option value="animate_after_head_turn">Animate 'After' (Head Turn)</option>
+                                        <option value="animate_after_smile">Animate 'After' (Gentle Smile)</option>
+                                        <option value="animate_after_surprise">Animate 'After' (Pleased Surprise)</option>
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="style-control group">
+                                <label htmlFor="emphasis-effect" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                                    Emphasis Effect
+                                    <span className="text-xs text-gray-500 ml-2">(Optional)</span>
+                                </label>
+                                <div className="relative">
+                                    <select 
+                                        id="emphasis-effect"
+                                        value={emphasisEffect}
+                                        onChange={(e) => setEmphasisEffect(e.target.value)}
+                                        className="w-full appearance-none px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm font-medium text-gray-700 shadow-sm hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                                    >
+                                        <option value="none">None</option>
+                                        <option value="hand_gesture">Highlight with Hand Gesture</option>
+                                        <option value="subtle_zoom">Subtle Zoom on 'After'</option>
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="style-control group">
+                                <label htmlFor="motion-speed" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                    Motion Speed
+                                </label>
+                                <div className="relative">
+                                    <select 
+                                        id="motion-speed"
+                                        value={motionSpeed}
+                                        onChange={(e) => setMotionSpeed(e.target.value)}
+                                        className="w-full appearance-none px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-medium text-gray-700 shadow-sm hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                                    >
+                                        <option value="slow">Slow</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="fast">Slightly Faster</option>
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="text-center mb-6 sm:mb-8">
@@ -331,6 +501,101 @@ const NewGenerate = () => {
                                     </svg>
                                     <span>{isDownloading ? 'Downloading...' : 'Download Video'}</span>
                                 </button>
+
+                                {/* Feedback Module */}
+                                {showFeedback && !feedbackGiven && (
+                                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-3 text-center">How was your video?</h4>
+                                        <div className="flex justify-center space-x-4">
+                                            <button
+                                                onClick={() => handleFeedbackRating('good')}
+                                                className="flex items-center space-x-2 px-4 py-2 bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition-colors"
+                                            >
+                                                <span className="text-xl">👍</span>
+                                                <span>Good</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleFeedbackRating('bad')}
+                                                className="flex items-center space-x-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg transition-colors"
+                                            >
+                                                <span className="text-xl">👎</span>
+                                                <span>Bad</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Detailed Feedback Modal */}
+                                {showDetailedFeedback && (
+                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                                        <div className="bg-white rounded-lg max-w-md w-full p-6">
+                                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Help us improve</h3>
+                                            <p className="text-gray-600 mb-4">What went wrong with your video?</p>
+                                            
+                                            <div className="space-y-3 mb-4">
+                                                {[
+                                                    'Unnatural Movement',
+                                                    'Face Was Distorted',
+                                                    "Didn't Follow Instructions",
+                                                    'Generated Outside The Box',
+                                                    'Other'
+                                                ].map((category) => (
+                                                    <button
+                                                        key={category}
+                                                        onClick={() => setFeedbackCategory(category)}
+                                                        className={`w-full text-left px-3 py-2 rounded border transition-colors ${
+                                                            feedbackCategory === category
+                                                                ? 'bg-blue-100 border-blue-300 text-blue-800'
+                                                                : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                                                        }`}
+                                                    >
+                                                        {category}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <textarea
+                                                value={feedbackText}
+                                                onChange={(e) => setFeedbackText(e.target.value)}
+                                                placeholder="Additional details (optional)..."
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg resize-none"
+                                                rows={3}
+                                            />
+
+                                            <div className="flex justify-end space-x-3 mt-4">
+                                                <button
+                                                    onClick={() => {
+                                                        setShowDetailedFeedback(false);
+                                                        setFeedbackGiven(true);
+                                                        setShowFeedback(false);
+                                                    }}
+                                                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDetailedFeedback(feedbackCategory, feedbackText)}
+                                                    disabled={!feedbackCategory || isSubmittingFeedback}
+                                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                                >
+                                                    {isSubmittingFeedback ? 'Submitting...' : 'Submit Feedback'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Thank You Message */}
+                                {feedbackGiven && (
+                                    <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                            </svg>
+                                            <p className="text-green-800 font-medium">Thank you for your feedback!</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

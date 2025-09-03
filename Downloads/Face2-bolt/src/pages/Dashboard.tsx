@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Video, Check, Crown, Zap, Users, LogOut } from 'lucide-react';
+import { Video, Check, Crown, Zap, Users, LogOut, Clock, Download, Eye, Calendar } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { logout } from '../services/authService';
+import { logout, updateUserSubscription } from '../services/authService';
 import { createCheckoutSession, createCustomerPortalSession } from '../services/stripeService';
+
+interface VideoHistory {
+  id: string;
+  title: string;
+  createdAt: string;
+  status: 'completed' | 'processing' | 'failed';
+  downloadUrl?: string;
+  thumbnailUrl?: string;
+}
 
 const Dashboard = () => {
   const { user, userProfile, logout: logoutStore } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [videoHistory, setVideoHistory] = useState<VideoHistory[]>([]);
   const navigate = useNavigate();
 
   const plans = [
@@ -59,6 +70,46 @@ const Dashboard = () => {
     },
   ];
 
+  const hasActiveSubscription = userProfile?.subscription.status === 'active' && 
+                                userProfile?.subscription.plan !== 'free' &&
+                                userProfile?.subscription.stripeCustomerId;
+
+  // Mock data for video history - in production this would come from Firestore
+  useEffect(() => {
+    if (user && hasActiveSubscription) {
+      // Mock video history data
+      const mockHistory: VideoHistory[] = [
+        {
+          id: '1',
+          title: 'Facial Treatment - Before & After',
+          createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+          status: 'completed',
+          downloadUrl: '#',
+          thumbnailUrl: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&h=200&fit=crop'
+        },
+        {
+          id: '2',
+          title: 'Body Contouring Results',
+          createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+          status: 'completed',
+          downloadUrl: '#',
+          thumbnailUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=300&h=200&fit=crop'
+        },
+        {
+          id: '3',
+          title: 'Skin Rejuvenation Video',
+          createdAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+          status: 'processing',
+        }
+      ];
+      setVideoHistory(mockHistory);
+    }
+  }, [user, hasActiveSubscription]);
+
+  const handleViewHistory = () => {
+    setShowHistory(true);
+  };
+
   const handlePlanSelection = async (planId: string) => {
     if (!user || !userProfile) return;
     
@@ -66,15 +117,58 @@ const Dashboard = () => {
     setSelectedPlan(planId);
 
     try {
-      await createCheckoutSession(
-        planId as 'starter' | 'pro' | 'enterprise',
-        user.uid,
-        user.email || ''
-      );
-      // User will be redirected to Stripe Checkout
+      console.log('Starting payment for plan:', planId);
+      console.log('User ID:', user.uid);
+      console.log('User email:', user.email);
+      
+      // Check if we're in development mode and using live keys (bypass Stripe)
+      const isDevModeWithLiveKeys = import.meta.env.DEV && 
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_live_');
+      
+      if (isDevModeWithLiveKeys) {
+        // Simulate payment flow for development
+        console.log('🧪 Development mode detected with live keys - simulating payment...');
+        const confirmed = confirm(`🧪 DEV MODE: Simulate successful payment for ${planId} plan?`);
+        
+        if (confirmed) {
+          // Simulate payment processing
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // Simulate successful subscription creation
+          const mockSubscription = {
+            plan: planId,
+            status: 'active' as const,
+            videosRemaining: planId === 'starter' ? 5 : planId === 'pro' ? 20 : 50,
+            videosTotal: planId === 'starter' ? 5 : planId === 'pro' ? 20 : 50,
+            stripeCustomerId: `dev_cus_${Date.now()}`,
+            stripeSubscriptionId: `dev_sub_${Date.now()}`,
+            renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          };
+          
+          // Update user subscription in Firebase
+          await updateUserSubscription(user.uid, mockSubscription);
+          console.log('🎉 Simulated successful payment:', mockSubscription);
+          alert(`🎉 Development payment simulation successful! Plan: ${planId}`);
+          
+          // Refresh the page to show updated subscription
+          window.location.reload();
+        } else {
+          setLoading(false);
+          setSelectedPlan(null);
+        }
+      } else {
+        // Use real Stripe flow
+        await createCheckoutSession(
+          planId as 'starter' | 'pro' | 'enterprise',
+          user.uid,
+          user.email || ''
+        );
+        // User will be redirected to Stripe Checkout
+      }
     } catch (error) {
       console.error('Error processing payment:', error);
-      alert('Payment failed. Please try again.');
+      console.error('Error details:', error.message);
+      alert(`Payment failed: ${error.message}. Please try again.`);
       setLoading(false);
       setSelectedPlan(null);
     }
@@ -82,7 +176,7 @@ const Dashboard = () => {
 
   const handleManageSubscription = async () => {
     if (!userProfile?.subscription.stripeCustomerId) {
-      alert('No customer ID found. Please contact support.');
+      alert('You need an active subscription to manage billing. Please select a plan first.');
       return;
     }
 
@@ -105,20 +199,19 @@ const Dashboard = () => {
     }
   };
 
-  const hasActiveSubscription = userProfile?.subscription.status === 'active' && 
-                                userProfile?.subscription.plan !== 'free';
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Video className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </div>
+            <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <img 
+                src="/logo.svg" 
+                alt="MedSpaGen Logo" 
+                className="w-6 h-6 sm:w-8 sm:h-8"
+              />
               <span className="text-lg sm:text-xl font-bold text-gray-900">MedSpaGen</span>
-            </div>
+            </Link>
             
             <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="text-xs sm:text-sm text-gray-600 hidden sm:block">
@@ -144,7 +237,7 @@ const Dashboard = () => {
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-2">
             {hasActiveSubscription 
               ? 'Welcome back! You can start generating videos or manage your subscription.'
-              : 'Select a plan to start generating amazing before & after videos for your MedSpa.'
+              : 'Select a plan to start generating amazing before & after videos for your MedSpa. Each plan comes with 3 free videos to start.'
             }
           </p>
         </div>
@@ -170,12 +263,14 @@ const Dashboard = () => {
                     >
                       Start Creating
                     </Link>
-                    <button
-                      onClick={handleManageSubscription}
-                      className="border border-blue-600 text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-50 transition-colors text-sm sm:text-base"
-                    >
-                      Manage Subscription
-                    </button>
+                    {userProfile?.subscription.stripeCustomerId && (
+                      <button
+                        onClick={handleManageSubscription}
+                        className="border border-blue-600 text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-50 transition-colors text-sm sm:text-base"
+                      >
+                        Manage Subscription
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -191,8 +286,11 @@ const Dashboard = () => {
                   <Video className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                   <span className="font-medium text-gray-900 text-sm sm:text-base">Generate Video</span>
                 </Link>
-                <button className="w-full flex items-center space-x-3 p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                <button 
+                  onClick={handleViewHistory}
+                  className="w-full flex items-center space-x-3 p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                   <span className="font-medium text-gray-900 text-sm sm:text-base">View History</span>
                 </button>
               </div>
@@ -308,6 +406,119 @@ const Dashboard = () => {
           </div>
         )}
       </main>
+
+      {/* Video History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-2xl font-bold text-gray-900">Video History</h3>
+                </div>
+                <button 
+                  onClick={() => setShowHistory(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
+              {videoHistory.length === 0 ? (
+                <div className="text-center py-12">
+                  <Video className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">No videos yet</h4>
+                  <p className="text-gray-600 mb-4">Start creating your first before & after video!</p>
+                  <Link
+                    to="/generate"
+                    onClick={() => setShowHistory(false)}
+                    className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Video className="w-5 h-5" />
+                    <span>Generate Video</span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {videoHistory.map((video) => (
+                    <div key={video.id} className="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                      {video.thumbnailUrl ? (
+                        <img 
+                          src={video.thumbnailUrl} 
+                          alt={video.title}
+                          className="w-full h-32 object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-32 bg-gray-200 flex items-center justify-center">
+                          <Video className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                      
+                      <div className="p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">{video.title}</h4>
+                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
+                          <Calendar className="w-4 h-4" />
+                          <span>{new Date(video.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            {video.status === 'completed' && (
+                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Completed
+                              </span>
+                            )}
+                            {video.status === 'processing' && (
+                              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Processing
+                              </span>
+                            )}
+                            {video.status === 'failed' && (
+                              <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Failed
+                              </span>
+                            )}
+                          </div>
+                          
+                          {video.status === 'completed' && video.downloadUrl && (
+                            <div className="flex space-x-2">
+                              <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <Eye className="w-4 h-4" />
+                              </button>
+                              <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <Download className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-gray-600">
+                  Showing {videoHistory.length} video{videoHistory.length !== 1 ? 's' : ''}
+                </p>
+                <button
+                  onClick={() => setShowHistory(false)}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
