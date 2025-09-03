@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { ArrowRight, Play, Sparkles, X, Calendar, Mail, Phone, Building } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 const CTA = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -15,7 +17,11 @@ const CTA = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleGetStarted = () => {
-    navigate('/login');
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleScheduleDemo = () => {

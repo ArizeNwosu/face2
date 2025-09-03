@@ -1,12 +1,18 @@
 import React from 'react';
 import { Play, ArrowRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const handleGetStarted = () => {
-    navigate('/login');
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
