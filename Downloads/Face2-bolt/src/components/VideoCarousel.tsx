@@ -8,15 +8,14 @@ const VideoCarousel = () => {
 
   // Placeholder video data - user will replace with actual videos
   const videos = [
-    { id: 1, title: 'Lip Refill', video: 'src/components/assets/STATIC-10.mp4' },
-    { id: 2, title: 'Facial Rejuvenation', video: 'src/components/assets/STATIC-6.mp4' },
-    { id: 3, title: 'Skin Tightening', video: 'src/components/assets/STATIC-2.mp4' },
-    { id: 4, title: 'Wrinkle Reduction', video: 'src/components/assets/STATIC-1.mp4' },
-    { id: 5, title: 'Laser Treatment', video: 'src/components/assets/STATIC-4.mp4' },
-    { id: 6, title: 'Filler Treatment', video: 'src/components/assets/STATIC-8.mp4' },
-    { id: 7, title: 'Botox Results', video: 'src/components/assets/STATIC-3.mp4' },
-    { id: 8, title: 'PRX Derm Perfexion', video: 'src/components/assets/STATIC-9.mp4' },
-    
+    { id: 1, title: 'Lip Refill', video: '/videos/STATIC-10.mp4' },
+    { id: 2, title: 'Facial Rejuvenation', video: '/videos/STATIC-6.mp4' },
+    { id: 3, title: 'Skin Tightening', video: '/videos/STATIC-2.mp4' },
+    { id: 4, title: 'Wrinkle Reduction', video: '/videos/STATIC-1.mp4' },
+    { id: 5, title: 'Laser Treatment', video: '/videos/STATIC-4.mp4' },
+    { id: 6, title: 'Filler Treatment', video: '/videos/STATIC-8.mp4' },
+    { id: 7, title: 'Botox Results', video: '/videos/STATIC-3.mp4' },
+    { id: 8, title: 'PRX Derm Perfexion', video: '/videos/STATIC-9.mp4' },
   ];
 
   // Duplicate videos for seamless infinite scroll
