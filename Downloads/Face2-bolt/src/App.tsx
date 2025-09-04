@@ -12,7 +12,6 @@ import Api from './pages/Api';
 import Support from './pages/Support';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
-import HipaaCompliance from './pages/HipaaCompliance';
 
 function App() {
   return (
@@ -44,7 +43,6 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/hipaa-compliance" element={<HipaaCompliance />} />
           </Routes>
         </div>
       </Router>
