@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Video, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
@@ -38,9 +39,9 @@ const Footer = () => {
             <ul className="space-y-3">
               <li><a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a></li>
               <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">API</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Support</a></li>
+              <li><Link to="/api" className="text-gray-400 hover:text-white transition-colors">API</Link></li>
+              <li><Link to="/documentation" className="text-gray-400 hover:text-white transition-colors">Documentation</Link></li>
+              <li><Link to="/support" className="text-gray-400 hover:text-white transition-colors">Support</Link></li>
             </ul>
           </div>
 
@@ -55,15 +56,14 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-blue-400" />
-                <a href="tel:+1234567890" className="text-gray-400 hover:text-white transition-colors">
+                <a href="tel:+13236387499" className="text-gray-400 hover:text-white transition-colors">
                   (323) 638-7499
                 </a>
               </li>
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-blue-400 mt-0.5" />
                 <span className="text-gray-400">
-                  741 Lakefield Road
-                  Suite G<br />
+                  741 Lakefield Road Suite G<br />
                   Thousand Oaks, CA 91361
                 </span>
               </li>
@@ -77,9 +77,9 @@ const Footer = () => {
               © 2025 MedSpaGen. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">HIPAA Compliance</a>
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link>
+              <Link to="/hipaa-compliance" className="text-gray-400 hover:text-white transition-colors">HIPAA Compliance</Link>
             </div>
           </div>
         </div>

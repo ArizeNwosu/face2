@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { generateClinicalVideo } from './gemini.service.ts';
 import { videoService } from '../../services/videoService';
 import { useAuthStore } from '../../store/authStore';
+import { deductUserCredit, getUserProfile } from '../../services/authService';
 
 // Helper function to convert image to 16:9 aspect ratio with letterboxing/pillarboxing
 const convertTo16x9 = (dataUrl: string): Promise<string> => {
@@ -57,7 +58,7 @@ const convertTo16x9 = (dataUrl: string): Promise<string> => {
 
 
 const NewGenerate = () => {
-    const { user } = useAuthStore();
+    const { user, userProfile, setUserProfile, getTotalCredits } = useAuthStore();
     const [compositeImage, setCompositeImage] = useState<string | null>(null);
     const [playableVideoUrl, setPlayableVideoUrl] = useState<string | null>(null);
     const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
@@ -127,6 +128,13 @@ const NewGenerate = () => {
             return;
         }
 
+        // Check if user has available credits
+        const totalCredits = getTotalCredits();
+        if (totalCredits <= 0) {
+            setError("You don't have enough credits to generate a video. Please upgrade your plan or purchase more credits.");
+            return;
+        }
+
         setIsLoading(true);
         setLoadingStage(0);
         setError(null);
@@ -174,6 +182,19 @@ const NewGenerate = () => {
                 processingTime,
                 blob.size
             );
+
+            // Deduct credit after successful video generation
+            const creditDeducted = await deductUserCredit(user.uid);
+            if (creditDeducted) {
+                // Update local user profile with fresh data
+                const updatedProfile = await getUserProfile(user.uid);
+                if (updatedProfile) {
+                    setUserProfile(updatedProfile);
+                }
+                console.log('Credit deducted successfully');
+            } else {
+                console.warn('Failed to deduct credit, but video was generated successfully');
+            }
 
         } catch (err: any) {
             console.error(err);
@@ -338,13 +359,34 @@ const NewGenerate = () => {
                     <div className="flex justify-between items-center h-14 sm:h-16">
                         <a href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
                             <img 
-                                src="/logo.svg" 
+                                src="/logo.png" 
                                 alt="MedSpaGen Logo" 
                                 className="w-6 h-6 sm:w-8 sm:h-8"
                             />
                             <span className="text-lg sm:text-xl font-bold text-gray-900">MedSpaGen</span>
                         </a>
-                        <nav className="flex items-center">
+                        <nav className="flex items-center space-x-4">
+                            {userProfile && (
+                                <div className="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
+                                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    <span className="text-sm font-medium text-blue-700">
+                                        {userProfile.credits.free > 0 && (
+                                            <span className="text-green-600">{userProfile.credits.free} Free</span>
+                                        )}
+                                        {userProfile.credits.free > 0 && (userProfile.credits.bonus > 0 || userProfile.subscription.videosRemaining > 0) && ' + '}
+                                        {userProfile.credits.bonus > 0 && (
+                                            <span className="text-purple-600">{userProfile.credits.bonus} Bonus</span>
+                                        )}
+                                        {userProfile.credits.bonus > 0 && userProfile.subscription.videosRemaining > 0 && ' + '}
+                                        {userProfile.subscription.videosRemaining > 0 && (
+                                            <span className="text-blue-600">{userProfile.subscription.videosRemaining} Plan</span>
+                                        )}
+                                        {getTotalCredits() === 0 && <span className="text-red-600">0 Credits</span>}
+                                    </span>
+                                </div>
+                            )}
                             <a href="/" className="text-sm sm:text-base text-gray-700 hover:text-blue-600 transition-colors">Back to Home</a>
                         </nav>
                     </div>
@@ -372,11 +414,6 @@ const NewGenerate = () => {
                     {/* Video Style Customization Section */}
                     <div className="video-style-section mb-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 sm:p-8 border border-blue-100 shadow-sm">
                         <div className="text-center mb-6 sm:mb-8">
-                            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl mb-4">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-                                </svg>
-                            </div>
                             <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
                                 Customize Your Video Style
                             </h3>
@@ -473,6 +510,11 @@ const NewGenerate = () => {
                             </svg>
                             <span>{isLoading ? 'Generating...' : 'Generate Video'}</span>
                         </button>
+                        
+                        {/* Disclaimer */}
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                            Disclaimer: AI tools can make mistakes, so double-check them.
+                        </p>
                     </div>
 
                     {error && (

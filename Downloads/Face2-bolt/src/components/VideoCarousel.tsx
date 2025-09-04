@@ -63,7 +63,7 @@ const VideoCarousel = () => {
   }, []);
 
   return (
-    <section className="pt-8 pb-16 bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden relative">
+    <section className="pt-0 pb-16 bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         
       </div>

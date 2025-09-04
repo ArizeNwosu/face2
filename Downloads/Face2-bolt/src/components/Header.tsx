@@ -38,7 +38,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="/logo.svg" 
+              src="/logo.png" 
               alt="MedSpaGen Logo" 
               className="w-8 h-8"
             />
@@ -51,7 +51,9 @@ const Header = () => {
                 <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">Features</a>
                 <a href="#how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors">How It Works</a>
                 <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
-                <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+                <Link to="/documentation" className="text-gray-700 hover:text-blue-600 transition-colors">Docs</Link>
+                <Link to="/api" className="text-gray-700 hover:text-blue-600 transition-colors">API</Link>
+                <Link to="/support" className="text-gray-700 hover:text-blue-600 transition-colors">Support</Link>
                 <div className="flex items-center space-x-4">
                   <Link 
                     to="/login" 
@@ -81,6 +83,9 @@ const Header = () => {
                 >
                   Generate
                 </Link>
+                <Link to="/documentation" className="text-gray-700 hover:text-blue-600 transition-colors">Docs</Link>
+                <Link to="/api" className="text-gray-700 hover:text-blue-600 transition-colors">API</Link>
+                <Link to="/support" className="text-gray-700 hover:text-blue-600 transition-colors">Support</Link>
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
@@ -147,7 +152,27 @@ const Header = () => {
                   <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Features</a>
                   <a href="#how-it-works" className="block px-3 py-2 text-gray-700 hover:text-blue-600">How It Works</a>
                   <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Pricing</a>
-                  <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Contact</a>
+                  <Link 
+                    to="/documentation" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Documentation
+                  </Link>
+                  <Link 
+                    to="/api" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    API
+                  </Link>
+                  <Link 
+                    to="/support" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Support
+                  </Link>
                   <Link 
                     to="/login" 
                     className="block px-3 py-2 text-gray-700 hover:text-blue-600"
@@ -178,6 +203,27 @@ const Header = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Generate Videos
+                  </Link>
+                  <Link 
+                    to="/documentation" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Documentation
+                  </Link>
+                  <Link 
+                    to="/api" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    API
+                  </Link>
+                  <Link 
+                    to="/support" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Support
                   </Link>
                   <button
                     onClick={() => {

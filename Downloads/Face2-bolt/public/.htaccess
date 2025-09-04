@@ -1,0 +1,11 @@
+# Handle API routes
+RewriteEngine On
+
+# Route API requests to PHP files
+RewriteRule ^api/schedule-demo$ api/schedule-demo.php [L]
+
+# Handle React Router (catch-all for client-side routing)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule . /index.html [L]

@@ -7,6 +7,12 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './pages/Dashboard';
 import Generate from './pages/generate/Generate';
+import Documentation from './pages/Documentation';
+import Api from './pages/Api';
+import Support from './pages/Support';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import HipaaCompliance from './pages/HipaaCompliance';
 
 function App() {
   return (
@@ -33,6 +39,12 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route path="/documentation" element={<Documentation />} />
+            <Route path="/api" element={<Api />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/hipaa-compliance" element={<HipaaCompliance />} />
           </Routes>
         </div>
       </Router>

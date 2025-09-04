@@ -1,0 +1,38 @@
+{
+  "hosting": [
+    {
+      "target": "medspagen",
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "medspagen-api",
+      "source": "server",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "function": "api"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "source": "server",
+    "runtime": "nodejs18"
+  }
+}

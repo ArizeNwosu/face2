@@ -16,7 +16,7 @@ interface VideoHistory {
 }
 
 const Dashboard = () => {
-  const { user, userProfile, logout: logoutStore } = useAuthStore();
+  const { user, userProfile, logout: logoutStore, getTotalCredits } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -170,7 +170,7 @@ const Dashboard = () => {
           <div className="flex justify-between items-center h-14 sm:h-16">
             <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
               <img 
-                src="/logo.svg" 
+                src="/logo.png" 
                 alt="MedSpaGen Logo" 
                 className="w-6 h-6 sm:w-8 sm:h-8"
               />
@@ -201,7 +201,7 @@ const Dashboard = () => {
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-2">
             {hasActiveSubscription 
               ? 'Welcome back! You can start generating videos or manage your subscription.'
-              : 'Select a plan to start generating amazing before & after videos for your MedSpa. Each plan comes with 3 free videos to start.'
+              : 'Select a plan to start generating amazing before & after videos for your MedSpa. Every new user gets 3 free video credits to start, plus the credits included in your chosen plan.'
             }
           </p>
         </div>
@@ -216,9 +216,28 @@ const Dashboard = () => {
                     <h3 className="text-base sm:text-lg font-semibold text-gray-900 capitalize">
                       {userProfile?.subscription.plan} Plan
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600">
-                      {userProfile?.subscription.videosRemaining} of {userProfile?.subscription.videosTotal} videos remaining
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-sm sm:text-base text-gray-600">
+                        {userProfile?.subscription.videosRemaining} of {userProfile?.subscription.videosTotal} plan videos remaining
+                      </p>
+                      {userProfile?.credits && (
+                        <div className="flex items-center space-x-3 text-xs sm:text-sm">
+                          {userProfile.credits.free > 0 && (
+                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                              {userProfile.credits.free} Free Credits
+                            </span>
+                          )}
+                          {userProfile.credits.bonus > 0 && (
+                            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                              {userProfile.credits.bonus} Bonus Credits
+                            </span>
+                          )}
+                          <span className="text-gray-500 font-medium">
+                            Total: {getTotalCredits()} credits available
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                     <Link
@@ -353,11 +372,32 @@ const Dashboard = () => {
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Free Plan Active
               </h3>
-              <p className="text-sm sm:text-base text-gray-600 mb-4">
-                You have {userProfile.subscription.videosRemaining} free videos remaining.
-                Upgrade to unlock more features and generate unlimited videos.
-              </p>
-              {userProfile.subscription.videosRemaining > 0 && (
+              <div className="space-y-3 mb-4">
+                <p className="text-sm sm:text-base text-gray-600">
+                  Plan: {userProfile.subscription.videosRemaining} free videos remaining
+                </p>
+                {userProfile.credits && (
+                  <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
+                    {userProfile.credits.free > 0 && (
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                        {userProfile.credits.free} Free Credits
+                      </span>
+                    )}
+                    {userProfile.credits.bonus > 0 && (
+                      <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+                        {userProfile.credits.bonus} Bonus Credits
+                      </span>
+                    )}
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+                      Total: {getTotalCredits()} credits available
+                    </span>
+                  </div>
+                )}
+                <p className="text-sm sm:text-base text-gray-600">
+                  Upgrade to unlock more features and generate unlimited videos.
+                </p>
+              </div>
+              {getTotalCredits() > 0 && (
                 <Link
                   to="/generate"
                   className="inline-flex items-center space-x-2 bg-blue-600 text-white px-4 sm:px-6 py-2 text-sm sm:text-base rounded-lg hover:bg-blue-700 transition-colors"

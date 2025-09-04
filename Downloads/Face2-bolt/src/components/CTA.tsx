@@ -42,22 +42,56 @@ const CTA = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('/api/schedule-demo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // In development, simulate form submission and provide mailto fallback
+      if (import.meta.env.DEV) {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // For development, create a mailto link as fallback
+        const mailtoBody = `Demo Request Details:
+        
+Name: ${formData.name}
+Email: ${formData.email}
+Phone: ${formData.phone || 'Not provided'}
+Company: ${formData.company || 'Not provided'}
 
-      if (response.ok) {
-        alert('Demo request submitted successfully! We\'ll get back to you soon.');
+Message:
+${formData.message || 'No message provided'}
+
+Please contact this person to schedule a demo.`;
+        
+        const mailtoLink = `mailto:support@medspagen.com?subject=New Demo Request from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(mailtoBody)}`;
+        
+        console.log('Demo request data:', formData);
+        console.log('In production, this would be sent to: support@medspagen.com');
+        
+        // Open mailto link
+        window.open(mailtoLink, '_blank');
+        
+        alert('Demo request submitted successfully! Your email client should open to send the request. We\'ll get back to you soon.');
         handleCloseModal();
       } else {
-        throw new Error('Failed to submit demo request');
+        // Production: use PHP endpoint
+        const response = await fetch('/api/schedule-demo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert('Demo request submitted successfully! We\'ll get back to you soon.');
+          handleCloseModal();
+        } else {
+          throw new Error(result.error || 'Failed to submit demo request');
+        }
       }
     } catch (error) {
-      alert('Failed to submit demo request. Please try again or contact us directly.');
+      console.error('Demo submission error:', error);
+      alert('Failed to submit demo request. Please try again or contact us directly at support@medspagen.com.');
     } finally {
       setIsSubmitting(false);
     }

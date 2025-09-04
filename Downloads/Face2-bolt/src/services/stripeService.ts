@@ -12,7 +12,7 @@ export const createCheckoutSession = async (
   try {
     const API_URL = import.meta.env.DEV 
       ? 'http://localhost:3001/api' 
-      : 'https://server-hw6cowuw0-myaddressmails-projects.vercel.app/api';
+      : 'https://server-aba65ueoo-myaddressmails-projects.vercel.app/api';
 
     const response = await fetch(`${API_URL}/create-checkout-session`, {
       method: 'POST',
@@ -49,7 +49,7 @@ export const createCustomerPortalSession = async (customerId: string) => {
   try {
     const API_URL = import.meta.env.DEV 
       ? 'http://localhost:3001/api' 
-      : 'https://server-hw6cowuw0-myaddressmails-projects.vercel.app/api';
+      : 'https://server-aba65ueoo-myaddressmails-projects.vercel.app/api';
 
     const response = await fetch(`${API_URL}/create-portal-session`, {
       method: 'POST',
@@ -81,7 +81,7 @@ export const cancelSubscription = async (subscriptionId: string, userId: string)
   try {
     const API_URL = import.meta.env.DEV 
       ? 'http://localhost:3001/api' 
-      : 'https://server-hw6cowuw0-myaddressmails-projects.vercel.app/api';
+      : 'https://server-aba65ueoo-myaddressmails-projects.vercel.app/api';
 
     const response = await fetch(`${API_URL}/cancel-subscription`, {
       method: 'POST',

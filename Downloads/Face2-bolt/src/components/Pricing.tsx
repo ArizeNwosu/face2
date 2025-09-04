@@ -1,12 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, Crown, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
+import { createCheckoutSession } from '../services/stripeService';
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const [loading, setLoading] = useState<string | null>(null);
 
-  const handleGetStarted = () => {
-    navigate('/login');
+  const handleSelectPlan = async (planName: string) => {
+    if (!user) {
+      // Not logged in, redirect to login
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setLoading(planName);
+      
+      // Map plan names to IDs
+      const planIdMap: Record<string, 'starter' | 'pro' | 'enterprise'> = {
+        'Starter': 'starter',
+        'Professional': 'pro',
+        'Enterprise': 'enterprise'
+      };
+      
+      const planId = planIdMap[planName];
+      if (!planId) {
+        throw new Error('Invalid plan selected');
+      }
+
+      await createCheckoutSession(planId, user.uid, user.email || '');
+    } catch (error) {
+      console.error('Error selecting plan:', error);
+      alert('Failed to proceed with plan selection. Please try again.');
+    } finally {
+      setLoading(null);
+    }
   };
 
   const plans = [
@@ -114,14 +145,15 @@ const Pricing = () => {
               </ul>
 
               <button 
-                onClick={handleGetStarted}
-                className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 ${
+                onClick={() => handleSelectPlan(plan.name)}
+                disabled={loading === plan.name}
+                className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                   plan.popular
                     ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-lg'
                     : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
                 }`}
               >
-                {plan.name === 'Enterprise' ? 'Get Started' : 'Get Started'}
+                {loading === plan.name ? 'Processing...' : (user ? `Select ${plan.name}` : 'Get Started')}
               </button>
             </div>
           ))}

@@ -69,8 +69,17 @@ class VideoService {
   async updateVideo(videoId: string, data: UpdateVideoData): Promise<void> {
     try {
       const videoRef = doc(this.videosCollection, videoId);
+      
+      // Filter out undefined values to avoid Firestore errors
+      const cleanData: any = {};
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined) {
+          cleanData[key] = value;
+        }
+      });
+      
       const updateData = {
-        ...data,
+        ...cleanData,
         updatedAt: serverTimestamp(),
       };
 

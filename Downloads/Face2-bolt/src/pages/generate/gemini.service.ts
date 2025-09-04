@@ -13,19 +13,141 @@ export const generateClinicalVideo = async (
         const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY as string });
 
         // Dynamic prompt engineering based on user options
-        const basePrompt = `**CRITICAL INSTRUCTION: All generated motion and content MUST be strictly confined within the original boundaries of the before-and-after photo panels. Do NOT alter, fill, or generate anything in the background or areas outside of the two subject panels. The framing of the original photos must be perfectly preserved throughout the video.**
+        const basePrompt = `Create a side-by-side clinical comparison video from a provided BEFORE/AFTER photo set.
 
-Generate a clinical demonstration video using the provided composite photo. The two panels must retain their exact original photos, backgrounds, and treatment results. Do not apply transitions, cuts, filters, or effects. Only add subtle, consistent human-like motion as described below, contained entirely within each panel:`;
+CORE OBJECTIVE: Create a professional-grade clinical before-and-after demonstration video that maintains absolute authenticity while incorporating subtle, naturalistic motion to enhance viewer engagement and treatment visualization.
+
+FUNDAMENTAL REQUIREMENTS:
+- PRESERVE ORIGINAL IMAGERY: The source photograph must remain completely unaltered in terms of facial features, skin texture, lighting conditions, background elements, and any visible treatment outcomes
+- NO DIGITAL MANIPULATION: Absolutely no filters, beauty effects, color correction, contrast adjustments, or any form of digital enhancement
+- NO CINEMATIC EFFECTS: No transitions, cuts, fades, zooms, pans, or any video editing techniques
+- MAINTAIN CLINICAL AUTHENTICITY: All imperfections, asymmetries, natural variations, and authentic skin conditions must be preserved exactly as they appear in the original image
+
+VIDEO COMPOSITION STRUCTURE:
+The video must be formatted as a side-by-side clinical comparison with two distinct panels:
+
+LEFT PANEL - "BEFORE" TREATMENT DOCUMENTATION:
+
+MOTION CHARACTERISTICS:
+- Primary Movement: Implement a slow, deliberate head rotation sequence that reveals the treatment area from multiple angles
+- Rotation Pattern: Begin with subject facing forward (0°), then slowly rotate head 25-35° to the right, hold position for 0.8-1.2 seconds, return to center (0°) and pause for 1.0-1.5 seconds, then rotate 25-40° to the left, hold for 0.8-1.2 seconds, return to center and maintain position until video completion
+- Rotation Speed: Extremely gradual movement, taking 2.5-3.5 seconds for each directional turn, creating a clinical examination pace
+- Head Positioning: Maintain chin level throughout rotation - no tilting up or down, only horizontal rotation around the vertical axis
+
+FACIAL EXPRESSION REQUIREMENTS:
+- Expression: Neutral to slightly concerned, reflecting the pre-treatment state
+- Eyes: Direct, honest gaze when facing forward; natural eye movement following head rotation
+- Mouth: Relaxed, possibly with slight tension indicating concern about the condition
+- Eyebrows: Natural position, may show slight furrowing indicating self-consciousness
+- Overall Demeanor: Vulnerable presentation of the area requiring treatment
+
+AUTHENTICITY PRESERVATION:
+- Maintain ALL visible imperfections: acne, scars, age spots, fine lines, wrinkles, uneven skin tone, redness, hyperpigmentation, texture irregularities
+- Preserve original lighting conditions and shadows exactly as captured
+- Keep background elements completely static and unchanged
+- Maintain original color temperature and saturation levels
+- Preserve any visible makeup, hair, or accessories exactly as originally positioned
+
+CLINICAL PRESENTATION INTENT:
+- The movement should feel like a medical consultation where the patient is presenting their concern for professional evaluation
+- Rotation should appear purposeful, as if showing the practitioner different angles of the treatment area
+- Movement quality should be slightly hesitant, reflecting the vulnerability of showing imperfections
+
+RIGHT PANEL - "AFTER" TREATMENT RESULTS:
+
+MOTION CHARACTERISTICS:
+- Primary Position: Subject remains predominantly forward-facing (0° orientation) with head stable and centered
+- Micro-movements Only: Incorporate extremely subtle, barely perceptible movements that suggest life without creating distraction
+
+SPECIFIC MICRO-MOVEMENT GUIDELINES:
+- Blinking: Maximum 2 blinks during entire video sequence, each lasting 0.15-0.25 seconds with natural eyelid closure speed
+- Eyebrow Activity: Occasional subtle shifts (1-2 instances) - slight raising or relaxing, each movement lasting 0.3-0.5 seconds
+- Mouth Movements: Minimal lip adjustments - perhaps a slight relaxation or very subtle smile beginning (not full smile), lasting 0.4-0.7 seconds
+- Eye Focus: Gentle shifts in gaze direction, moving from direct camera contact to slight angles (5-10° maximum deviation), returning to center
+- Facial Muscle Tension: Very slight changes in overall facial tension, reflecting increased confidence
+
+EXPRESSION REQUIREMENTS:
+- Overall Demeanor: Confident, satisfied, and comfortable
+- Eyes: Clear, direct, with subtle brightness indicating satisfaction
+- Mouth: Relaxed, with potential for the beginning hint of a pleased expression
+- Eyebrows: Naturally positioned, slightly more relaxed than "before" panel
+- Skin Appearance: The treated results should be clearly visible - smoother texture, reduced imperfections, improved tone
+
+STABILITY EMPHASIS:
+- Head Position: Rock-steady primary position with only micro-adjustments
+- Background: Completely static, identical to original image
+- Lighting: Consistent with original capture conditions
+- Overall Impression: Calm confidence in results, peaceful satisfaction
+
+OPTIONAL HAND GESTURE SPECIFICATIONS:
+- Timing: May introduce between seconds 3-8 of video sequence
+- Duration: 1.5-3.0 seconds maximum
+- Movement Quality: Slow, gentle, non-distracting
+- Hand Position Options:
+  * Light fingertip touch near treated area (not directly on skin)
+  * Gentle gesture indicating the improvement (hand moving toward area without contact)
+  * Soft framing gesture around the treated region
+- Hand Movement Speed: Extremely slow and deliberate
+- Entry/Exit: Hand should enter and exit frame gradually, never appearing suddenly
+
+TECHNICAL VIDEO SPECIFICATIONS:
+- Duration: 8 seconds total length
+- Frame Rate: Smooth, cinematic quality (minimum 24fps)
+- Resolution: High definition maintaining source image quality
+- Audio: Silent - no sound required
+- Aspect Ratio: Maintain 16:9 widescreen format with both panels clearly visible
+- Panel Division: Clean, precise 50/50 split down the center vertical axis
+
+LIGHTING AND VISUAL CONSISTENCY:
+- Maintain identical lighting conditions between both panels
+- Preserve original shadows, highlights, and color temperature
+- No enhancement or correction of lighting conditions
+- Background elements must remain perfectly consistent
+- Any visible environmental details (furniture, walls, etc.) must be identical
+
+MOTION QUALITY STANDARDS:
+- All movements must appear completely natural and human-like
+- No robotic or artificial motion patterns
+- Movements should have natural acceleration and deceleration
+- Incorporate subtle imperfections in timing that reflect natural human movement
+- Avoid perfect symmetry or mechanical precision
+
+CLINICAL AUTHENTICITY MARKERS:
+- The "before" panel should clearly demonstrate the original condition requiring treatment
+- The "after" panel should authentically show the treatment results without exaggeration
+- Any improvement should be realistic and proportionate to actual treatment capabilities
+- Maintain professional medical documentation standards throughout
+
+VIEWER ENGAGEMENT ELEMENTS:
+- The contrasting movement patterns (dynamic "before" vs. stable "after") should create visual interest
+- Head rotation in "before" panel reveals condition comprehensively
+- Stability in "after" panel emphasizes confidence and satisfaction with results
+- Overall effect should be compelling without being sensationalized
+
+ABSOLUTE PROHIBITIONS:
+- No morphing or shape-changing effects
+- No color grading or tone adjustments
+- No smoothing, sharpening, or texture modifications
+- No background replacement or alteration
+- No addition of graphics, text, or overlays
+- No speed ramping or time manipulation effects
+- No particle effects, glows, or enhancement filters
+- No artificial lighting or illumination changes
+
+The final video must serve as an authentic clinical demonstration that could be used in medical presentations while maintaining complete honesty about both the original condition and the treatment results. Every frame must withstand professional scrutiny for authenticity and accuracy.
+
+        `;
 
         // Snippets for Animation Logic
         const animationSnippets = {
             animate_before_head_turn: {
-                before: `• Left Panel (Before): The subject's head rotates slowly side-to-side *within its frame*. The movement must feel intentional, as if presenting untreated skin for close inspection. Maintain all natural texture and imperfections exactly as in the source photo.`,
+                before: `• Left Panel (Before): The subject’s head turns slowly side-to-side *within its frame*. Begin by turning approximately 15–30° in one direction, pause, return to center, pause for one second, then rotate 15–35° in the opposite direction before returning to center again. The movement must feel intentional, as if presenting untreated skin for close inspection. Maintain all natural texture and imperfections exactly as in the source photo—fine lines, redness, acne, scars, or uneven tone must remain visible and unedited. The rotation simply reveals them from different angles inside the original photo's boundaries. All movements must be contained within this panel.`,
                 after: `• Right Panel (After): The subject remains steady and forward-facing *within its frame*. Add only very subtle micro-movements (natural blinking, faint micro-expressions) to keep the photo alive. The overall impression must be calm stability.`
             },
             animate_after_head_turn: {
                 before: `• Left Panel (Before): The subject remains steady and forward-facing *within its frame*. Add only very subtle micro-movements (natural blinking) to keep the photo alive.`,
-                after: `• Right Panel (After): The subject's head rotates slowly side-to-side *within its frame*. The movement must feel confident, as if showing off the excellent results from all angles.`
+                after: `• Right Panel (After): The subject’s head turns slowly side-to-side *within its frame*. Begin by turning approximately 15–30° in one direction, pause, return to center, pause for one second, then rotate 15–35° in the opposite direction before returning to center again. The movement must feel intentional, as if presenting untreated skin for close inspection. Maintain all natural texture and imperfections exactly as in the source photo—fine lines, redness, acne, scars, or uneven tone must remain visible and unedited. The rotation simply reveals them from different angles inside the original photo's boundaries. All movements must be contained within this panel.
+`
             },
             animate_after_smile: {
                 before: `• Left Panel (Before): The subject remains steady and forward-facing *within its frame* with a neutral expression. Add only very subtle micro-movements (natural blinking).`,
@@ -40,8 +162,8 @@ Generate a clinical demonstration video using the provided composite photo. The 
         // Snippets for Emphasis Effects (to be appended to the 'After' panel instruction)
         const emphasisSnippets = {
             none: '',
-            hand_gesture: ` For 2-3 seconds, a natural, professional-looking hand (neutral nail color, no jewelry) will enter the RIGHT PANEL ONLY to gently highlight the primary treatment area in the 'after' results. The hand must NEVER appear in the left 'before' panel. The hand gesture must be subtle and clinical, drawing attention to the successful results without obscuring them, then smoothly exit the frame.`,
-            subtle_zoom: ` Apply a very slow, subtle zoom-in effect (e.g., from 100% to 105% scale) focused on the subject in this panel. The zoom should be smooth and last for the majority of the video's duration to create a sense of focus.`
+            hand_gesture: ` You may briefly introduce a natural hand gesture near the treatment area for 1–3 seconds, but it must not distract from the treatment area but rather highlight and emphasize it.`,
+            subtle_zoom: ` You may briefly apply a natural a very slow, subtle zoom-in effect (e.g., from 100% to 105% scale).`
         };
 
         // Snippets for Motion Speed
